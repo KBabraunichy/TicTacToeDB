@@ -5,6 +5,7 @@ Console.OutputEncoding = Encoding.UTF8;
 while (true)
 {
     Console.WriteLine("Добро пожаловать в игру \"крестики-нолики\"!");
+    
     FieldClass newField = new();
     newField.DisplayField();
     
@@ -16,8 +17,8 @@ while (true)
 
     player1.field = player2.field = newField.field;
 
-    Game startgame = new (player1, player2);
-    startgame.GameStart();
+    Game startGame = new (player1, player2);
+    startGame.GameStart();
 
     Console.WriteLine("Нажмите клавишу Enter, если хотите сыграть снова. Если хотите выйти, нажмите любую другую клавишу.");
     if(Console.ReadKey().Key != ConsoleKey.Enter)

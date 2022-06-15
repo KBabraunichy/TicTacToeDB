@@ -11,7 +11,8 @@ class Game
     public void GameStart()
     {
         Console.WriteLine("Игра началась!\nИгроки вводят 2 числа, x и y, через пробел, от 1 до 3. Например (x, y) = (1, 1) является первой клеткой.");
-        //Console.WriteLine("На каждый ход дается 15 секунд, если игрок не успевает, ход переходит другому игроку.");
+        Console.WriteLine("На каждый ход дается 15 секунд, если игрок не успевает, ход переходит другому игроку.");
+        
         int whoseTurn = WhoseTurn();
         int turn = 1;
         string[] briefNames = { $"Ход игрока {players[0].Name}('x')", $"Ход игрока {players[1].Name}('o')" };
@@ -19,7 +20,12 @@ class Game
         while (turn <= 9)
         {
             Console.WriteLine(briefNames[whoseTurn]);
-            players[whoseTurn].SetField();
+
+            //Из-за возможных переходов хода к противнику, передаю turn как ссылку, чтобы держать turn всегда в пределах 9
+            //чтобы не создавать дополнительных методов/переменных на проверку заполненности поля и избежать
+            //ничьи с открытыми клетками, возможными под выйгрыш
+
+            players[whoseTurn].SetField(ref turn);
             if (turn >= 5)
             {
                 if (WinCheck(players[whoseTurn]))
@@ -30,14 +36,14 @@ class Game
 
             }
             whoseTurn = (whoseTurn == 0) ? 1 : 0;
-            turn++;
+            //turn++;
         }
         Console.WriteLine("Ходы закончились. Ничья!");
     }
     int WhoseTurn()
     {
-        double randomnumber = new Random().NextDouble();
-        if (randomnumber <= 0.5)
+        double randomNumber = new Random().NextDouble();
+        if (randomNumber <= 0.5)
         {
             Console.WriteLine($"Игрок {players[0].Name}('x') ходит первым.");
             return 0;
@@ -74,21 +80,21 @@ class Game
 
         }
 
-        int leftdiag = 0;
-        int rightdiag = 0;
+        int leftDiag = 0;
+        int rightDiag = 0;
         //Диагонали
         for (int i = 0; i < 3; i++)
         {
             if (field[i, i] == type)
             {
-                leftdiag++;
+                leftDiag++;
             }
             if (field[i, 2 - i] == type)
             {
-                rightdiag++;
+                rightDiag++;
             }
         }
-        if (leftdiag == 3 || rightdiag == 3)
+        if (leftDiag == 3 || rightDiag == 3)
         {
             return true;
         }
