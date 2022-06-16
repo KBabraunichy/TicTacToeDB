@@ -1,7 +1,7 @@
 ﻿
 class Game
 {
-    Player[] players = new Player[2];
+    private Player[] players = new Player[2];
     public Game(Player player1, Player player2)
     {
         players[0] = player1;
@@ -10,27 +10,28 @@ class Game
 
     public void GameStart()
     {
-        Console.WriteLine("Игра началась!\nИгроки вводят 2 числа, x и y, через пробел, от 1 до 3. Например (x, y) = (1, 1) является первой клеткой.");
-        Console.WriteLine("На каждый ход дается 15 секунд, если игрок не успевает, ход переходит другому игроку.");
+        Console.WriteLine("\nThe game has begun!\nPlayers enter 2 numbers, x and y, separated by a space, from 1 to 3." +
+            " For example (x, y) = (1, 1) is the first square.");
+        Console.WriteLine("For each turn you have 15 seconds, if time's up, the turn goes to another player.");
         
         int whoseTurn = WhoseTurn();
         int turn = 1;
-        string[] briefNames = { $"Ход игрока {players[0].Name}('x')", $"Ход игрока {players[1].Name}('o')" };
+        string[] briefNames = { $"\nThe turn of the player {players[0].Name}('x')", $"\nThe turn of the player {players[1].Name}('o')" };
         
         while (turn <= 9)
         {
             Console.WriteLine(briefNames[whoseTurn]);
 
-            //Из-за возможных переходов хода к противнику, передаю turn как ссылку, чтобы держать turn всегда в пределах 9
-            //чтобы не создавать дополнительных методов/переменных на проверку заполненности поля и избежать
-            //ничьи с открытыми клетками, возможными под выйгрыш
+            //Due to possible turn's transitions to the opponent, I pass "turn" variable as a ref to keep "turn" always 
+            //within 9 so as not to create additional methods/variables to check the field's fullness and 
+            //avoid a draw with open squares possible for a win
 
             players[whoseTurn].SetField(ref turn);
             if (turn >= 5)
             {
                 if (WinCheck(players[whoseTurn]))
                 {
-                    Console.WriteLine($"Победа игрока {players[whoseTurn].Name}!");
+                    Console.WriteLine($"The victory of the player {players[whoseTurn].Name}!");
                     return;
                 }
 
@@ -38,23 +39,23 @@ class Game
             whoseTurn = (whoseTurn == 0) ? 1 : 0;
             //turn++;
         }
-        Console.WriteLine("Ходы закончились. Ничья!");
+        Console.WriteLine("The moves are over. A draw!");
     }
-    int WhoseTurn()
+    private int WhoseTurn()
     {
         double randomNumber = new Random().NextDouble();
         if (randomNumber <= 0.5)
         {
-            Console.WriteLine($"Игрок {players[0].Name}('x') ходит первым.");
+            Console.WriteLine($"Player {players[0].Name}('x') goes first.");
             return 0;
         }
-        Console.WriteLine($"Игрок {players[1].Name}('o') ходит первым.");
+        Console.WriteLine($"Player {players[1].Name}('o') goes first.");
         return 1;
     }
 
-    bool WinCheck(Player player)
+    private bool WinCheck(Player player)
     {
-        char[,] field = player.field;
+        char[,] field = player.Field;
         char type = player.Type;
         int horizont;
         int vertical;
@@ -82,7 +83,7 @@ class Game
 
         int leftDiag = 0;
         int rightDiag = 0;
-        //Диагонали
+        //Diags
         for (int i = 0; i < 3; i++)
         {
             if (field[i, i] == type)
