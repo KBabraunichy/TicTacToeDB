@@ -1,14 +1,15 @@
-﻿using System.Text.RegularExpressions;
+﻿using static TicTacToe.Utils.GameConstants;
+using System.Text.RegularExpressions;
 
 class Game
 {
     private Player[] players = new Player[2];
     private FieldClass gameField;
-    public Game(FieldClass field, Player player1, Player player2)
+    public Game()
     {
-        gameField = field;
-        players[0] = player1;
-        players[1] = player2;  
+        gameField = new FieldClass();
+        players[0] = new Player(FirstPlayerCharacter);
+        players[1] = new Player(SecondPlayerCharacter);  
     }
 
     public void GameStart()

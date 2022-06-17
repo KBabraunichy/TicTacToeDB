@@ -1,5 +1,5 @@
 ﻿
-namespace dotNET_task1.Utils
+namespace TicTacToe.Utils
 {
     public static class GameConstants
     {
