@@ -4,11 +4,11 @@ class Game
 {
     private Player[] players = new Player[2];
     private FieldClass gameField;
-    public Game(Player player1, Player player2, FieldClass field)
+    public Game(FieldClass field, Player player1, Player player2)
     {
-        players[0] = player1;
-        players[1] = player2;
         gameField = field;
+        players[0] = player1;
+        players[1] = player2;  
     }
 
     public void GameStart()
@@ -19,7 +19,8 @@ class Game
         
         int whoseTurn = WhoseTurn();
         int turn = 1;
-        string[] briefNames = { $"\nThe turn of the player {players[0].Name}('x')", $"\nThe turn of the player {players[1].Name}('o')" };
+        string[] briefNames = { $"\nThe turn of the player {players[0].Name}('{players[0].Type}')", 
+                                $"\nThe turn of the player {players[1].Name}('{players[1].Type}')" };
         
         while (turn <= 9)
         {
@@ -138,10 +139,10 @@ class Game
         double randomNumber = new Random().NextDouble();
         if (randomNumber <= 0.5)
         {
-            Console.WriteLine($"Player {players[0].Name}('x') goes first.");
+            Console.WriteLine($"Player {players[0].Name}('{players[0].Type}') goes first.");
             return 0;
         }
-        Console.WriteLine($"Player {players[1].Name}('o') goes first.");
+        Console.WriteLine($"Player {players[1].Name}('{players[1].Type}') goes first.");
         return 1;
     }
 

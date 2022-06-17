@@ -3,19 +3,18 @@ class Player
 {
     private string name;
     readonly char type;
+
     public Player(char type)
     {
+        Console.WriteLine($"Player '{type}':");
         this.type = type;
         EnterName();
     }
-    public string? Name
-    {
-        get
-        {
-            return name;
-        }
-    }
+
+    public string Name { get { return name; } }
+
     public char Type { get { return type; } }
+
     void EnterName()
     {
         while (true)

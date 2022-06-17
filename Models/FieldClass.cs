@@ -1,14 +1,21 @@
-﻿
+﻿using System.Text;
+
 public class FieldClass
 {
     internal char[,] Field = new char[3, 3];
     readonly int _rows;
     readonly int _cols;
+
     public FieldClass()
     {
+        Console.OutputEncoding = Encoding.UTF8;
+        Console.WriteLine("Welcome to the Tic-Tac-Toe game!");
+
         _rows = Field.GetLength(0);
         _cols = Field.GetLength(1);
+
         SetStartField();
+        DisplayField();
     }
 
     void SetStartField()
