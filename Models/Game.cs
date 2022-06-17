@@ -1,11 +1,14 @@
-﻿
+﻿using System.Text.RegularExpressions;
+
 class Game
 {
     private Player[] players = new Player[2];
-    public Game(Player player1, Player player2)
+    private FieldClass gameField;
+    public Game(Player player1, Player player2, FieldClass field)
     {
         players[0] = player1;
         players[1] = player2;
+        gameField = field;
     }
 
     public void GameStart()
@@ -26,10 +29,10 @@ class Game
             //within 9 so as not to create additional methods/variables to check the field's fullness and 
             //avoid a draw with open squares possible for a win
 
-            players[whoseTurn].SetField(ref turn);
+            SetField(whoseTurn, ref turn);
             if (turn >= 5)
             {
-                if (WinCheck(players[whoseTurn]))
+                if (WinCheck(players[whoseTurn].Type))
                 {
                     Console.WriteLine($"The victory of the player {players[whoseTurn].Name}!");
                     return;
@@ -41,6 +44,95 @@ class Game
         }
         Console.WriteLine("The moves are over. A draw!");
     }
+
+    private void SetField(int whoseTurn, ref int turn, int attempt = 0)
+    {
+        Console.Write($"Enter numbers x and y: ");
+        EnterXYCheck(out int x, out int y);
+
+        if (x == -1)
+        {
+            Console.WriteLine("\nTime's up.\nThe turn goes to another player.");
+            return;
+        }
+
+        //checks if square is filled
+        if (gameField.Field[x, y] == '.')
+        {
+            gameField.Field[x, y] = players[whoseTurn].Type;
+            gameField.DisplayField();
+            turn++;
+        }
+        else
+        {
+            //if player enters 3 incorrect sets of x and y, the turn goes to another player
+            if (attempt == 2)
+            {
+                Console.WriteLine("You've entered 3 incorrect sets of x and y, the turn goes to another player.");
+                return;
+            }
+            attempt++;
+
+            Console.WriteLine("Error! The square is filled, enter another set of x and y.");
+            SetField(whoseTurn, ref turn, attempt);
+        }
+    }
+    static protected void EnterXYCheck(out int x, out int y)
+    {
+        int timer = 0;
+        Regex regex = new Regex(@"\s+");
+        while (true)
+        {
+            try
+            {
+                //Code below checks that x and y contain only numbers from 1 to 3. Also removes unnecessary space characters
+
+                string stringCheck = "";
+                if (Console.KeyAvailable)
+                {
+                    stringCheck = Console.ReadLine();
+                    timer = 0;
+                }
+
+                Thread.Sleep(250);
+                timer++;
+
+                if (timer == 60)
+                {
+                    x = y = -1;
+                    return;
+                }
+                else if (stringCheck == "")
+                {
+                    continue;
+                }
+                else
+                {
+                    stringCheck = regex.Replace(stringCheck.Trim(), " ");
+                    if (!Regex.IsMatch(stringCheck, @"^[1-3]\s[1-3]$"))
+                    {
+                        throw new Exception("Error! Only numbers from 1 to 3 are possible.");
+                    }
+                    else
+                    {
+                        x = int.Parse(stringCheck[0].ToString()) - 1;
+                        y = int.Parse(stringCheck[2].ToString()) - 1;
+                        return;
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.Write("Re-enter x and y: ");
+                //continue;
+            }
+        }
+
+    }
+
     private int WhoseTurn()
     {
         double randomNumber = new Random().NextDouble();
@@ -53,10 +145,9 @@ class Game
         return 1;
     }
 
-    private bool WinCheck(Player player)
+    private bool WinCheck(char type)
     {
-        char[,] field = player.Field;
-        char type = player.Type;
+        char[,] field = gameField.Field;
         int horizont;
         int vertical;
 

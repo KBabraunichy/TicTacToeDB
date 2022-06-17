@@ -15,9 +15,7 @@ while (true)
     Console.WriteLine("Player 'o':");
     Player player2 = new ('o');
 
-    player1.Field = player2.Field = newField.Field;
-
-    Game startGame = new (player1, player2);
+    Game startGame = new (player1, player2, newField);
     startGame.GameStart();
 
     Console.WriteLine("Press Enter if you want to play again. If you want to exit, press any other key.");
