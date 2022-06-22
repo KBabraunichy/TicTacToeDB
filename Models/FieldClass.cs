@@ -18,7 +18,7 @@ public class FieldClass
         DisplayField();
     }
 
-    void SetStartField()
+    private void SetStartField()
     {
         for (int i = 0; i < _rows; i++)
             for (int j = 0; j < _cols; j++)

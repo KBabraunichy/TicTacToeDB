@@ -1,28 +1,58 @@
 ﻿using static TicTacToe.Utils.GameConstants;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 class Game
 {
+    public delegate void GameHandler(string message);
+    public event GameHandler? Notify;
+
+    public int GameId { get; set; }
+    public int Player1Id { get; set; }
+    public int Player2Id { get; set; }
+    public int WinnerPlayerId { get; set; } = 0;  // 0 - Draw
+    public DateTime GameStartedTime { get; set; }
+    public DateTime GameFinishedTime { get; set; }
+
     private Player[] players = new Player[2];
     private FieldClass gameField;
+
     public Game()
     {
+
+    }
+
+    public Game(string init)
+    {
+        //Console.WriteLine(init);
         gameField = new FieldClass();
         players[0] = new Player(FirstPlayerCharacter);
-        players[1] = new Player(SecondPlayerCharacter);  
+        players[1] = new Player(SecondPlayerCharacter);
+        Notify += (string message) =>
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(message); 
+            Console.ResetColor();
+        };
     }
 
     public void GameStart()
     {
-        Console.WriteLine("\nThe game has begun!\nPlayers enter 2 numbers, x and y, separated by a space, from 1 to 3." +
+        Notify?.Invoke("\nThe game has begun!\nPlayers enter 2 numbers, x and y, separated by a space, from 1 to 3." +
             " For example (x, y) = (1, 1) is the first square.");
-        Console.WriteLine("For each turn you have 15 seconds, if time's up, the turn goes to another player.");
+        Notify?.Invoke("For each turn you have 15 seconds, if time's up, the turn goes to another player.");
         
         int whoseTurn = WhoseTurn();
         int turn = 1;
         string[] briefNames = { $"\nThe turn of the player {players[0].Name}('{players[0].Type}')", 
                                 $"\nThe turn of the player {players[1].Name}('{players[1].Type}')" };
-        
+
+        Player1Id = players[0].PlayerId; 
+        Player2Id = players[1].PlayerId;
+
+        GameStartedTime = DateTime.Now;
+
         while (turn <= 9)
         {
             Console.WriteLine(briefNames[whoseTurn]);
@@ -36,15 +66,96 @@ class Game
             {
                 if (WinCheck(players[whoseTurn].Type))
                 {
-                    Console.WriteLine($"The victory of the player {players[whoseTurn].Name}!");
-                    return;
+                    Notify?.Invoke($"The victory of the player {players[whoseTurn].Name}!");
+                    WinnerPlayerId = players[whoseTurn].PlayerId;
+                    break;
                 }
 
             }
             whoseTurn = (whoseTurn == 0) ? 1 : 0;
-            //turn++;
+            
+            if(turn==10)
+                Notify?.Invoke("The moves are over. A draw!");
         }
-        Console.WriteLine("The moves are over. A draw!");
+
+        GameFinishedTime = DateTime.Now;
+
+        using (ApplicationContext db = new ApplicationContext())
+        {
+            foreach (int i in new int[] { 0, 1 })
+            {
+                Player? playerFromDB = db.Players.FirstOrDefault(b => b.PlayerId == players[i].PlayerId);
+                if (playerFromDB != null)
+                {
+                    if (!playerFromDB.Type.Equals(players[i].Type) || !playerFromDB.Name.Equals(players[i].Name)
+                        || !playerFromDB.Age.Equals(players[i].Age))
+                    {
+                        playerFromDB.Name = players[i].Name;
+                        playerFromDB.Age = players[i].Age;
+                        playerFromDB.Type = players[i].Type;
+
+                        db.Players.Update(playerFromDB);
+                    }
+                }
+                else
+                {
+                    db.Players.Add(players[i]);
+                }
+            }
+
+            db.Games.Add(this);
+            db.SaveChanges();
+        }
+
+        GamesResultToJSON();
+    }
+
+    public async void GamesResultToJSON()
+    {
+        string[] availableCommands = new[] { "/generateresults", "/generateallresults", "/skip" };
+        while(true)
+        {
+            Console.WriteLine("\nYou can enter next commands:" +
+                              "\n/generateresults - create json file contains info about last game" +
+                              "\n/generateallresults - create json file contains info about all games" +
+                              "\n/skip - skip this part and continue");
+
+            string command = Console.ReadLine().Trim();
+            if (!availableCommands.Contains(command))
+            {
+                Console.WriteLine("Incorrect command, try again.");
+                continue;
+            }
+            else
+            {
+                if (command == "/skip") 
+                    return;
+
+                string query;
+
+                if (command == "/generateresults")
+                    query = "SELECT * FROM Games WHERE GameId = (SELECT MAX(GameId) FROM Games)";
+                else
+                    query = "SELECT * FROM Games";
+
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    var gamesFromDB = db.Games.FromSqlRaw(query).ToList();
+
+                    string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "games.json");
+
+                    using (StreamWriter writer = new StreamWriter(path, false))
+                    {
+                        string json = JsonSerializer.Serialize(gamesFromDB);
+                        await writer.WriteLineAsync(json);
+
+                        Console.WriteLine("\nData has been saved to file:");
+                        Console.WriteLine(path);
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     private void SetField(int whoseTurn, ref int turn, int attempt = 0)
