@@ -1,7 +1,7 @@
-﻿
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 
-class Player
+public class Player
 {
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public int PlayerId { get; set; }
@@ -24,73 +24,46 @@ class Player
     {
         Console.WriteLine($"Player '{type}':");
         this.type = type;
-        EnterId();
-        EnterName();
-        EnterAge();
+        EnterPlayerInfo();
     }
 
-
-
-    private void EnterName()
+    private void EnterPlayerInfo()
     {
+        Console.WriteLine("Enter your info in next format: <ID> <Name> <Age> (e.g. 12 Denis 32).");
         while (true)
         {
-            Console.Write("Enter your name: ");
-            string check = Console.ReadLine();
-            if (!string.IsNullOrEmpty(check) && check.Length < 26)
+            try
             {
-                name = check;
+                
+                string stringCheck = Console.ReadLine();
+
+                Regex regex = new Regex(@"\s+");
+                stringCheck = regex.Replace(stringCheck.Trim(), " ");
+
+                if (stringCheck.Where(x => (x == ' ')).Count() != 2 || !Regex.IsMatch(stringCheck, @"^\d+\s\S+\s\d+$"))
+                    throw new Exception("Incorrect format, please try again.");
+
+                string[] words = stringCheck.Split(' ');
+                
+                PlayerId = int.Parse(words[0]);
+                name = words[1];
+                age = int.Parse(words[2]);
+
+                if (age < 10 || age > 90 || name.Length > 25)
+                    throw new Exception("Incorrect age or name, please try again.");
+
                 return;
+
             }
-            else
-                Console.WriteLine("Invalid name or the length of the name exceeds 25 characters, try again.");
-        }
-    }
-
-    private void EnterAge()
-    {
-        while (true)
-        {
-            Console.Write("Enter your age: ");
-
-            try
+            catch (OverflowException)
             {
-                int checkAge = int.Parse(Console.ReadLine());
-
-                if (checkAge >= 10 && checkAge <= 90)
-                {
-                    age = checkAge;
-                    return;
-                }
-                throw new Exception();
+                Console.WriteLine("Your ID or age exceeds the maximum integer value, please try again.");
             }
-            catch
+            catch (Exception e)
             {
-                Console.WriteLine("Incorrect age, enter the age between 10 and 90.");
-            }   
-        }
-    }
-    private void EnterId()
-    {
-        while (true)
-        {
-            Console.Write("Enter your ID: ");
-
-            try
-            {
-                int checkId = int.Parse(Console.ReadLine());
-
-                if (checkId > 0)
-                {
-                    PlayerId = checkId;
-                    return;
-                }
-                throw new Exception();
+                Console.WriteLine(e.Message);
             }
-            catch
-            {
-                Console.WriteLine("Incorrect ID, enter an int number greater than 0.");
-            }
+            
         }
     }
 }

@@ -1,12 +1,12 @@
 ﻿using System.Text;
 
-public class FieldClass
+public class FieldModel
 {
     internal char[,] Field = new char[3, 3];
     readonly int _rows;
     readonly int _cols;
 
-    public FieldClass()
+    public FieldModel()
     {
         Console.OutputEncoding = Encoding.UTF8;
         Console.WriteLine("Welcome to the Tic-Tac-Toe game!");
