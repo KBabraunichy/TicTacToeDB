@@ -51,10 +51,8 @@ public class Game
         int turn = 1;
         string[] briefNames = { $"\nThe turn of the player {players[0].Name}('{players[0].Type}')", 
                                 $"\nThe turn of the player {players[1].Name}('{players[1].Type}')" };
-
+               
         
-        
-
         GameStartedTime = DateTime.Now;
 
         while (turn <= 9)
