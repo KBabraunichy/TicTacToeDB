@@ -43,7 +43,7 @@ public class GameService
                 if (command == GenerateAllResultsCommand)
                     gamesFromDB = _gameRepository.GetObjectList();
                 else
-                    gamesFromDB = new List<Game> { _gameRepository.GetLastObjectId() };
+                    gamesFromDB = new List<Game> { _gameRepository.GetLastObjectById() };
 
                 string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FileName);
 

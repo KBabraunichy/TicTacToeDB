@@ -19,7 +19,7 @@ public class GameRepository : IRepository<Game>
         return db.Games.Find(id);
     }
 
-    public Game GetLastObjectId()
+    public Game GetLastObjectById()
     {
         return db.Games.OrderByDescending(p => p.GameId).FirstOrDefault();
     }
