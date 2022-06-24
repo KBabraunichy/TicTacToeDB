@@ -25,7 +25,17 @@ public class Game
     {
         gameField = new FieldModel();
         players[0] = new Player(FirstPlayerCharacter);
+        FirstPlayerId = players[0].PlayerId;
         players[1] = new Player(SecondPlayerCharacter);
+
+        while (players[1].PlayerId == FirstPlayerId)
+        {
+            Console.WriteLine($"Player '{FirstPlayerCharacter}' has the same ID, please re-enter your info.");
+            players[1].EnterPlayerInfo();
+        }
+
+        SecondPlayerId = players[1].PlayerId;
+
         Notify += (string message) =>
         {
             Console.ForegroundColor = ConsoleColor.Green;
@@ -42,8 +52,8 @@ public class Game
         string[] briefNames = { $"\nThe turn of the player {players[0].Name}('{players[0].Type}')", 
                                 $"\nThe turn of the player {players[1].Name}('{players[1].Type}')" };
 
-        FirstPlayerId = players[0].PlayerId;
-        SecondPlayerId = players[1].PlayerId;
+        
+        
 
         GameStartedTime = DateTime.Now;
 

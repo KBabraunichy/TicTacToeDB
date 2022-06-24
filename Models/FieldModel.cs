@@ -17,16 +17,6 @@ public class FieldModel
         SetStartField();
         DisplayField();
     }
-
-    private void SetStartField()
-    {
-        for (int i = 0; i < _rows; i++)
-            for (int j = 0; j < _cols; j++)
-            {
-                Field[i, j] = '.';
-            }
-    }
-
     public void DisplayField()
     {
         for (int i = 0; i < _rows; i++)
@@ -46,6 +36,16 @@ public class FieldModel
         }
         Console.WriteLine();
     }
+
+    private void SetStartField()
+    {
+        for (int i = 0; i < _rows; i++)
+            for (int j = 0; j < _cols; j++)
+            {
+                Field[i, j] = '.';
+            }
+    }
+
 }
 
     

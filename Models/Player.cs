@@ -27,7 +27,7 @@ public class Player
         EnterPlayerInfo();
     }
 
-    private void EnterPlayerInfo()
+    public void EnterPlayerInfo()
     {
         Console.WriteLine("Enter your info in next format: <ID> <Name> <Age> (e.g. 12 Denis 32).");
         while (true)

@@ -9,9 +9,13 @@ namespace TicTacToe.Utils
 
     public static class GameServiceConstants
     {
-        public const string SkipCommand = "/skip";
+        public const string NewGameCommand = "/newgame";
+        public const string CloseAppCommand = "/close";
         public const string GenerateResultsCommand = "/generateresults";
         public const string GenerateAllResultsCommand = "/generateallresults";
-        public const string FileName = "games.json";
+        public const string LastGameFileName = "game";
+        public const string AllGamesFileName = "games";
+        public const string FilesDirectoryName = "GameFiles";
+        public const string FileFormat = ".json";
     }
 }
