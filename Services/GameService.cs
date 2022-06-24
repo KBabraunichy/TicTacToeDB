@@ -18,7 +18,7 @@ public class GameService
         _gameRepository.Save();
     }
 
-    public bool GameResultAsync()
+    public bool GameResult()
     {
         string[] availableCommands = new[] { GenerateResultsCommand, GenerateAllResultsCommand, NewGameCommand, CloseAppCommand };
         while (true)

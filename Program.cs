@@ -10,7 +10,7 @@ while (true)
 
     GameService gameService = new GameService();
     gameService.CreateGame(startGame);
-    if(!gameService.GameResultAsync())
+    if(!gameService.GameResult())
         break;
 
     Console.Clear();
