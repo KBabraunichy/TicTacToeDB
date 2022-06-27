@@ -14,8 +14,17 @@ public class GameService
 
     public void CreateGame(Game game)
     {
-        _gameRepository.Create(game);
-        _gameRepository.Save();
+        try
+        {
+            _gameRepository.Create(game);
+            _gameRepository.Save();
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine("Game info has not been added in the database.");
+        }
     }
 
     public bool GameResult()
@@ -51,18 +60,25 @@ public class GameService
                 Regex reg = new Regex("[: .]");
                 dateTime = reg.Replace(dateTime, "_");
 
-                if (command == GenerateAllResultsCommand)
+                try
                 {
-                    gamesFromDB = _gameRepository.GetObjectList();
-                    fileName = string.Concat(AllGamesFileName, "_", dateTime, FileFormat);
-                }
-                else
-                {
-                    gamesFromDB = new List<Game> { _gameRepository.GetLastObjectById() };
-                    fileName = string.Concat(LastGameFileName, "_", dateTime, FileFormat);
-                }
+                    if (command == GenerateAllResultsCommand)
+                    {
+                        gamesFromDB = _gameRepository.GetObjectList();
+                        fileName = string.Concat(AllGamesFileName, "_", dateTime, FileFormat);
+                    }
+                    else
+                    {
+                        gamesFromDB = new List<Game> { _gameRepository.GetLastObjectById() };
+                        fileName = string.Concat(LastGameFileName, "_", dateTime, FileFormat);
+                    }
 
-                GamesToJSON(gamesFromDB, fileName);
+                    GamesToJSON(gamesFromDB, fileName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
 
             }
         }
@@ -70,7 +86,8 @@ public class GameService
 
     public async void GamesToJSON(List<Game> gamesFromDB, string fileName)
     {
-        string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FilesDirectoryName);
+        var directory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+        string folderPath = Path.Combine(directory.Parent.Parent.Parent.ToString(), FilesDirectoryName);
 
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);

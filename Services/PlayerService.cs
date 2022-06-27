@@ -9,27 +9,37 @@
 
     public void UpdateOrCreatePlayer(Player[] players)
     {
-        foreach (int i in new int[] { 0, 1 })
+        try
         {
-            Player playerFromDB = _playerRepository.GetObject(players[i].PlayerId);
-            if (playerFromDB != null)
+            var allPlayersFromDB = _playerRepository.GetObjectList();
+            foreach (int i in new int[] { 0, 1 })
             {
-                if (!playerFromDB.Type.Equals(players[i].Type) || !playerFromDB.Name.Equals(players[i].Name)
-                    || !playerFromDB.Age.Equals(players[i].Age))
+                Player playerFromDB = allPlayersFromDB.Find(p => p.PlayerId == players[i].PlayerId);
+                if (playerFromDB != null)
                 {
-                    playerFromDB.Name = players[i].Name;
-                    playerFromDB.Age = players[i].Age;
-                    playerFromDB.Type = players[i].Type;
+                    if (!playerFromDB.Type.Equals(players[i].Type) || !playerFromDB.Name.Equals(players[i].Name)
+                        || !playerFromDB.Age.Equals(players[i].Age))
+                    {
+                        playerFromDB.Name = players[i].Name;
+                        playerFromDB.Age = players[i].Age;
+                        playerFromDB.Type = players[i].Type;
 
-                    _playerRepository.Update(playerFromDB);
+                        _playerRepository.Update(playerFromDB);
+                    }
+                }
+                else
+                {
+                    _playerRepository.Create(players[i]);
                 }
             }
-            else
-            {
-                _playerRepository.Create(players[i]);
-            }
+
+            _playerRepository.Save();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine("Players info have not been added nor updated in the database.");
         }
 
-        _playerRepository.Save();
     }
 }
